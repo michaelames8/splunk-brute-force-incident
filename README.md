@@ -1,102 +1,105 @@
-# 🛡️ Unauthorized Access Attempt – Splunk Brute Force Incident  
-### Windows Server 2022 Targeted by Ubuntu Host Using Nmap & Hydra
-
-![MITRE T1110](https://img.shields.io/badge/ATT%26CK-T1110%20Brute%20Force-red)
-![MITRE T1046](https://img.shields.io/badge/ATT%26CK-T1046%20Network%20Scanning-blue)
-![MITRE T1078](https://img.shields.io/badge/ATT%26CK-T1078%20Valid%20Accounts%20(attempted)-orange)
-![Splunk](https://img.shields.io/badge/SIEM-Splunk%20Enterprise-green)
-![Windows](https://img.shields.io/badge/Target-Windows%20Server%202022-lightgrey)
-![Ubuntu](https://img.shields.io/badge/Source-Ubuntu%2024.04-critical)
+# 🛡️ Unauthorized Access – Brute Force & Reconnaissance Incident  
+### Target: Windows Server 2022 (WIN-1BRV561EKE1 – 192.168.84.135)  
+### Source: Ubuntu Host (ubuntulab – 192.168.84.134)  
+### SIEM: Windows 11 Pro (Win11 – 192.168.84.131) running Splunk Enterprise
 
 ---
 
-## 📌 Executive Summary  
-On **12/29/2025 time**, suspicious authentication and reconnaissance activity was detected targeting a **Windows Server 2022** system (**192.168.84.135**).  
-Analysis within Splunk revealed:
-
-- Multiple **Nmap scans** from **192.168.84.134 (Ubuntu)**  
-- Repeated **Hydra brute-force attempts** against the `vmw-lab` account  
-- Numerous **failed logon events (EventCode 4625)**  
-- **No successful authentication** or lateral movement  
-- Immediate isolation of the Ubuntu host  
-
-The attack was unsuccessful, but the behavior indicated a compromised or malicious user on the Ubuntu system.
+# 🎖️ MITRE ATT&CK Techniques  
+[![T1110 – Brute Force](https://img.shields.io/badge/MITRE-T1110_Brute_Force-red?logo=target)](https://attack.mitre.org/techniques/T1110/)  
+[![T1046 – Network Scanning](https://img.shields.io/badge/MITRE-T1046_Network_Scanning-blue?logo=target)](https://attack.mitre.org/techniques/T1046/)  
+[![T1078 – Valid Accounts (Attempted)](https://img.shields.io/badge/MITRE-T1078_Valid_Accounts-orange?logo=target)](https://attack.mitre.org/techniques/T1078/)
 
 ---
 
-## 🧭 Environment Overview
-
-| Component | IP Address | Role |
-|----------|------------|------|
-| Windows Server 2022 | **192.168.84.135** | Target system (victim) |
-| Ubuntu 24.04 | **192.168.84.134** | Source of brute force & scanning |
-| Windows 11 Pro | N/A | Splunk Search Head + Indexer |
-| Splunk UF | N/A | Installed on Windows Server & Ubuntu |
-| Telemetry | N/A | Windows Security Logs + Sysmon |
+# 💻 System & Tools
+![Windows Server 2022](https://img.shields.io/badge/Windows_Server_2022-0078D6?logo=windows&logoColor=white)  
+![Windows 11 Pro](https://img.shields.io/badge/Windows_11_Pro-0078D6?logo=windows11&logoColor=white)  
+![Ubuntu 24.04](https://img.shields.io/badge/Ubuntu_24.04-E95420?logo=ubuntu&logoColor=white)  
+![Splunk Enterprise](https://img.shields.io/badge/Splunk_Enterprise-000000?logo=splunk&logoColor=white)  
+![Hydra](https://img.shields.io/badge/Hydra-4B275F?logo=hackthebox&logoColor=white)  
+![Nmap](https://img.shields.io/badge/Nmap-215732?logo=linux&logoColor=white)  
 
 ---
 
-## 🚨 Incident Summary
+# 📌 Executive Summary  
+On **11/29/2025 time**, suspicious authentication and reconnaissance activity was detected on the Windows Server 2022 system (**WIN-1BRV561EKE1 – 192.168.84.135**).  
+Logs forwarded into Splunk Enterprise (hosted on the Windows 11 Pro VM **Win11 – 192.168.84.131**) revealed:
 
-| Category | Details |
-|----------|---------|
-| **Type** | Unauthorized access attempt + Reconnaissance |
-| **Source** | Ubuntu host (192.168.84.134) |
-| **Target** | Windows Server 2022 (192.168.84.135) |
-| **Attack Tools** | Nmap, Hydra |
-| **Targeted User** | `vmw-lab` |
-| **Outcome** | No successful logons |
+- Network reconnaissance originating from **ubuntulab – 192.168.84.134** using **Nmap**
+- Brute force login attempts using **Hydra**
+- Repeated login failures against user **vmw-lab**  
+- No successful logons or lateral movement  
+- The Ubuntu host was immediately isolated from the network  
+- The targeted user password was reset  
 
----
-
-## 🔎 Indicators of Attack  
-
-### ✔ Brute Force Indicators  
-- High volume of **EventCode 4625** failed login attempts  
-- Consistent targeting of `vmw-lab`  
-- Attempts from a single IP (192.168.84.134)  
-- No EventCode **4624** (successful logon)  
-
-### ✔ Recon Indicators (Nmap)  
-- Sequential connection attempts across common ports  
-- Sysmon Event ID 3 logs showing rapid port hits  
+This report documents the findings, timeline, SPL queries, and remediation actions.
 
 ---
 
-## 🗂 Log Evidence (Screenshots)
+# 🧭 Environment Overview
 
-Add your screenshots to `/screenshots/` and embed them below.
+| Hostname | IP Address | Operating System | Role |
+|----------|------------|------------------|------|
+| **Win11** | 192.168.84.131 | Windows 11 Pro | Splunk Search Head + Indexer |
+| **WIN-1BRV561EKE1** | 192.168.84.135 | Windows Server 2022 | Target (Victim) |
+| **ubuntulab** | 192.168.84.134 | Ubuntu 24.04 | Source of attack (compromised) |
 
-### 🔹 Splunk – Failed Logon Summary  
-`/screenshots/splunk_4625_summary.png`  
+Telemetry sources:
+
+- **Windows Security Logs** (EventCode 4625)
+- **Sysmon Logs** (network & process telemetry)
+- **Splunk Universal Forwarder** on Windows Server + Ubuntu
+
+---
+
+# 🧨 Indicators of Attack  
+
+### ✔ Unauthorized Network Scanning  
+- Nmap reconnaissance from `ubuntulab (192.168.84.134)`  
+- Sequential port probing detected via Sysmon Event ID 3  
+
+### ✔ Brute Force Authentication Attempts  
+- High volume of **EventCode 4625** failures  
+- Attempts targeted user **vmw-lab**  
+- No EventCode **4624** (successful login)  
+
+### ✔ No Evidence of:  
+- Session establishment  
+- Lateral movement  
+- Privilege escalation  
+- Persistence mechanisms  
+
+---
+
+# 🔍 Log Evidence & Screenshots  
+
+Add your images into `/screenshots/` and they will display here.
+
+### 🔹 Splunk: Failed Logon Summary  
 ![Failed Logon Summary](screenshots/splunk_4625_summary.png)
 
-### 🔹 Splunk – Timechart of Brute Force Attempts  
-`/screenshots/splunk_timechart.png`  
+### 🔹 Splunk: Timechart of Brute Force Attempts  
 ![Brute Force Timechart](screenshots/splunk_timechart.png)
 
-### 🔹 Splunk – Recon Activity (Nmap)  
-`/screenshots/splunk_nmap.png`  
-![Nmap Recon](screenshots/splunk_nmap.png)
+### 🔹 Splunk: Recon Activity (Nmap)  
+![Nmap Recon Activity](screenshots/splunk_nmap.png)
 
-### 🔹 Windows Server – Event Viewer 4625  
-`/screenshots/eventviewer_4625.png`  
+### 🔹 Windows Event Viewer (4625)  
 ![Event 4625](screenshots/eventviewer_4625.png)
 
-### 🔹 Ubuntu – Hydra Output  
-`/screenshots/hydra_output.png`  
+### 🔹 Hydra Output (Ubuntu)  
 ![Hydra Output](screenshots/hydra_output.png)
 
-### 🔹 Ubuntu – Nmap Scan Output  
-`/screenshots/nmap_output.png`  
+### 🔹 Nmap Scan Output  
 ![Nmap Output](screenshots/nmap_output.png)
 
 ---
 
-## 🧪 Splunk Detection Queries
+# 🧪 SPL Queries Used During Investigation  
 
-### 🔹 Failed Authentication Summary  
+### **Failed Authentication Summary**
 ```spl
-index=main host="WIN-SERVER" EventCode=4625
+index=main host="WIN-1BRV561EKE1" EventCode=4625
 | stats count by Account_Name, IpAddress, FailureReason
 | sort - count
