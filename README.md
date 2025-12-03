@@ -1,34 +1,28 @@
 # 🛡️ Unauthorized Access – Brute Force & Reconnaissance Incident  
-### Target: Windows Server 2022 (WIN-1BRV561EKE1 – 192.168.84.135)  
-### Source: Ubuntu Host (ubuntulab – 192.168.84.134)  
-### SIEM: Windows 11 Pro (Win11 – 192.168.84.131) running Splunk Enterprise
+### SIEM: Windows 11 Pro VM (Win11 – 192.168.84.131) running Splunk Enterprise
+### Source: Ubuntu Host VM (ubuntulab – 192.168.84.134)
+### Target: Windows Server 2022 VM (WIN-1BRV561EKE1 – 192.168.84.135)  
+
 
 ---
 
 # 🎖️ MITRE ATT&CK Techniques  
-[![T1110 – Brute Force](https://img.shields.io/badge/MITRE-T1110_Brute_Force-red?logo=target)](https://attack.mitre.org/techniques/T1110/)  
-[![T1046 – Network Scanning](https://img.shields.io/badge/MITRE-T1046_Network_Scanning-blue?logo=target)](https://attack.mitre.org/techniques/T1046/)  
-[![T1078 – Valid Accounts (Attempted)](https://img.shields.io/badge/MITRE-T1078_Valid_Accounts-orange?logo=target)](https://attack.mitre.org/techniques/T1078/)
+[![T1110 – Brute Force](https://img.shields.io/badge/MITRE-T1110_Brute_Force-red?logo=target)](https://attack.mitre.org/techniques/T1110/) &nbsp;&nbsp;&nbsp;[![T1046 – Network Scanning](https://img.shields.io/badge/MITRE-T1046_Network_Scanning-blue?logo=target)](https://attack.mitre.org/techniques/T1046/) &nbsp;&nbsp;&nbsp;[![T1078 – Valid Accounts (Attempted)](https://img.shields.io/badge/MITRE-T1078_Valid_Accounts-orange?logo=target)](https://attack.mitre.org/techniques/T1078/)
 
 ---
 
 # 💻 System & Tools
-![Windows Server 2022](https://img.shields.io/badge/Windows_Server_2022-0078D6?logo=windows&logoColor=white)  
-![Windows 11 Pro](https://img.shields.io/badge/Windows_11_Pro-0078D6?logo=windows11&logoColor=white)  
-![Ubuntu 24.04](https://img.shields.io/badge/Ubuntu_24.04-E95420?logo=ubuntu&logoColor=white)  
-![Splunk Enterprise](https://img.shields.io/badge/Splunk_Enterprise-000000?logo=splunk&logoColor=white)  
-![Hydra](https://img.shields.io/badge/Hydra-4B275F?logo=hackthebox&logoColor=white)  
-![Nmap](https://img.shields.io/badge/Nmap-215732?logo=linux&logoColor=white)  
+![Windows Server 2022](https://img.shields.io/badge/Windows_Server_2022-0078D6?logo=windows&logoColor=white) &nbsp;&nbsp;&nbsp;![Windows 11 Pro](https://img.shields.io/badge/Windows_11_Pro-0078D6?logo=windows11&logoColor=white) &nbsp;&nbsp;&nbsp;![Ubuntu 24.04](https://img.shields.io/badge/Ubuntu_24.04-E95420?logo=ubuntu&logoColor=white) &nbsp;&nbsp;&nbsp;![Splunk Enterprise](https://img.shields.io/badge/Splunk_Enterprise-000000?logo=splunk&logoColor=white) &nbsp;&nbsp;&nbsp;![Hydra](https://img.shields.io/badge/Hydra-4B275F?logo=hackthebox&logoColor=white) &nbsp;&nbsp;&nbsp;![Nmap](https://img.shields.io/badge/Nmap-215732?logo=linux&logoColor=white)  
 
 ---
 
 # 📌 Executive Summary  
-On **11/29/2025 time**, suspicious authentication and reconnaissance activity was detected on the Windows Server 2022 system (**WIN-1BRV561EKE1 – 192.168.84.135**).  
-Logs forwarded into Splunk Enterprise (hosted on the Windows 11 Pro VM **Win11 – 192.168.84.131**) revealed:
+On **11/29/2025 time**, suspicious authentication and reconnaissance activity was detected on the Windows Server.  
+Logs forwarded into Splunk Enterprise revealed:
 
-- Network reconnaissance originating from **ubuntulab – 192.168.84.134** using **Nmap**
+- Network reconnaissance originating from the Ubuntu VM using **Nmap**
 - Brute force login attempts using **Hydra**
-- Repeated login failures by user **vmw-lab**  
+- Repeated login failures by user **vmw-lab** from the Ubuntu computer 
 - No successful logons or lateral movement  
 - The Ubuntu host was immediately isolated from the network  
 - The targeted user's password was reset  
@@ -61,11 +55,11 @@ Telemetry sources:
 
 ### ✔ Brute Force Authentication Attempts  
 - High volume of **EventCode 4625** failures  
-- Attempts targeted user **vmw-lab**  
+- Attempts targeted host **WIN-1BRV561EKE1**  
 - No EventCode **4624** (successful login)  
 
 ### ✔ No Evidence of:  
-- Session establishment  
+- An Established Session
 - Lateral movement  
 - Privilege escalation  
 - Persistence mechanisms  
@@ -73,8 +67,6 @@ Telemetry sources:
 ---
 
 # 🔍 Log Evidence & Screenshots  
-
-Add your images into `/screenshots/` and they will display here.
 
 ### 🔹 Splunk: Failed Logon Summary  
 ![Failed Logon Summary](screenshots/splunk_4625_summary.png)
