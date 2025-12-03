@@ -28,10 +28,10 @@ Logs forwarded into Splunk Enterprise (hosted on the Windows 11 Pro VM **Win11 â
 
 - Network reconnaissance originating from **ubuntulab â€“ 192.168.84.134** using **Nmap**
 - Brute force login attempts using **Hydra**
-- Repeated login failures against user **vmw-lab**  
+- Repeated login failures by user **vmw-lab**  
 - No successful logons or lateral movement  
 - The Ubuntu host was immediately isolated from the network  
-- The targeted user password was reset  
+- The targeted user's password was reset  
 
 This report documents the findings, timeline, SPL queries, and remediation actions.
 
@@ -42,7 +42,7 @@ This report documents the findings, timeline, SPL queries, and remediation actio
 | Hostname | IP Address | Operating System | Role |
 |----------|------------|------------------|------|
 | **Win11** | 192.168.84.131 | Windows 11 Pro | Splunk Search Head + Indexer |
-| **WIN-1BRV561EKE1** | 192.168.84.135 | Windows Server 2022 | Target (Victim) |
+| **WIN-1BRV561EKE1** | 192.168.84.135 | Windows Server 2022 | Target |
 | **ubuntulab** | 192.168.84.134 | Ubuntu 24.04 | Source of attack (compromised) |
 
 Telemetry sources:
