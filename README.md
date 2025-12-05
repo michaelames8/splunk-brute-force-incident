@@ -17,14 +17,15 @@
 ---
 
 # 📌 Executive Summary  
-On **11/29/2025 time**, suspicious authentication and reconnaissance activity was detected on the Windows Server.  
-Logs forwarded into Splunk Enterprise revealed:
+On **11/29/2025 time**, multiple failed Remote Desktop Protocol (RDP) authentication attempts were detected on the Windows Server. All attempts originated from a single Ubuntu host within the network. After the The Ubuntu host was immediately isolated from the network  
+Logs analysis using Splunk Enterprise revealed:
 
-- Network reconnaissance originating from the Ubuntu VM using **Nmap**
+- Network reconnaissance originating from the Ubuntu host using **Nmap**
 - Brute force login attempts using **Hydra**
 - Repeated login failures by user **vmw-lab** from the Ubuntu computer 
-- No successful logons or lateral movement  
-- The Ubuntu host was immediately isolated from the network  
+- No successful logons, lateral movement, or data access  
+
+  
 - The targeted user's password was reset  
 
 This report documents the findings, timeline, SPL queries, and remediation actions.
