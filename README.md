@@ -17,16 +17,13 @@
 ---
 
 # 📌 Executive Summary  
-On **11/29/2025 time**, multiple failed Remote Desktop Protocol (RDP) authentication attempts were detected on the Windows Server. All attempts originated from a single Ubuntu host within the network. After the The Ubuntu host was immediately isolated from the network  
+On **11/29/2025 at 6:15 PM EST**, multiple failed Remote Desktop Protocol (RDP) authentication attempts were detected on the Windows Server. All attempts originated from a single Ubuntu host within the network. After the initial detection, the Ubuntu host was immediately isolated from the network pending an investigation.
 Logs analysis using Splunk Enterprise revealed:
 
 - Network reconnaissance originating from the Ubuntu host using **Nmap**
 - Brute force login attempts using **Hydra**
 - Repeated login failures by user **vmw-lab** from the Ubuntu computer 
 - No successful logons, lateral movement, or data access  
-
-  
-- The targeted user's password was reset  
 
 This report documents the findings, timeline, SPL queries, and remediation actions.
 
@@ -89,10 +86,32 @@ Telemetry sources:
 
 ---
 
-# 🧪 SPL Queries Used During Investigation  
+# 🧪 Investigation
+The investigation focused on determining whether the failed logon activity represented unauthorized access attempts, the attack method, and whether credentials were compromised. Splunk searches filtered by IP address revealed that only one system was the target of the attack and all attempts to access the Windows Server originated from one machine, the Ubuntu host (192.168.84.134), ruling out lateral movement within the network.
+
+##SPL Queries Used During Investigation  
 
 ### **Failed Authentication Summary**
 ```spl
 index=main host="WIN-1BRV561EKE1" EventCode=4625
 | stats count by Account_Name, IpAddress, FailureReason
 | sort - count
+
+Time Range: Last 24 hours
+```
+### **Use of Hydra**
+```spl
+index=main host="ubuntulab" "hydra"
+| sort by _time asc
+
+Time Range: Last 7 days
+```
+### **Use of Nmap**
+```spl
+index=main host="ubuntulab" COMMAND="/usr/bin/nmap"
+| sort by _time asc
+
+Time Range: Last 7 days 
+```
+
+
